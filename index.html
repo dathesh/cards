@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Карточки для слов</title>
+  <title>Карточки для текста</title>
   <style>
     :root {
       --bg: #f8fafc;
@@ -14,8 +14,9 @@
       --button: #0f172a;
       --button-text: #ffffff;
       --soft: #f1f5f9;
+      --accent: #2563eb;
       --danger: #ef4444;
-      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
     }
 
     * {
@@ -25,100 +26,171 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #e0f2fe 0, var(--bg) 36%);
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #dbeafe 0, var(--bg) 38%);
       color: var(--text);
     }
 
     main {
-      width: min(1000px, calc(100% - 32px));
+      width: min(1080px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 40px 0;
+      padding: 28px 0 42px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(34px, 6vw, 58px);
+      font-size: clamp(32px, 6vw, 54px);
       letter-spacing: -0.05em;
       line-height: 1;
     }
 
     .subtitle {
-      margin: 14px auto 0;
-      max-width: 680px;
+      margin: 12px auto 0;
+      max-width: 720px;
       color: var(--muted);
-      font-size: 18px;
-      line-height: 1.55;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: start;
     }
 
     .panel {
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.92);
       border: 1px solid var(--border);
       border-radius: 28px;
-      box-shadow: var(--shadow);
-      padding: 22px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+      padding: 18px;
       backdrop-filter: blur(10px);
-      margin-bottom: 28px;
     }
 
-    label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 170px;
-      resize: vertical;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 16px;
-      font: inherit;
-      font-size: 16px;
-      line-height: 1.5;
-      outline: none;
-      color: var(--text);
-      background: white;
-    }
-
-    textarea:focus {
-      border-color: #94a3b8;
-      box-shadow: 0 0 0 5px rgba(148, 163, 184, 0.22);
-    }
-
-    .actions {
+    .study-panel {
+      min-height: 560px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+    }
+
+    .top-row {
+      display: flex;
       align-items: center;
-      gap: 14px;
-      margin-top: 16px;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
 
-    .hint {
+    .counter {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 999px;
       color: var(--muted);
+      padding: 8px 12px;
       font-size: 14px;
+      white-space: nowrap;
     }
 
-    .buttons {
+    .card-stage {
+      flex: 1;
+      min-height: 390px;
+      perspective: 1400px;
       display: flex;
+    }
+
+    .flashcard {
+      position: relative;
+      width: 100%;
+      min-height: 390px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      perspective: 1400px;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      min-height: 390px;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.45s ease;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .back {
+      transform: rotateY(180deg);
+      background: #fefce8;
+    }
+
+    .face-label {
+      align-self: flex-start;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .back .face-label {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .card-text {
+      flex: 1;
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: clamp(15px, 2vw, 19px);
+      line-height: 1.55;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+    }
+
+    .study-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
-      flex-wrap: wrap;
+      margin-top: 14px;
     }
 
     button {
       border: 0;
       cursor: pointer;
       border-radius: 999px;
-      padding: 12px 16px;
+      padding: 12px 14px;
       font: inherit;
-      font-weight: 700;
+      font-weight: 800;
       transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
     }
 
@@ -153,133 +225,138 @@
       border: 1px solid var(--border);
     }
 
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 14px;
+    .danger {
+      background: #fee2e2;
+      color: #991b1b;
     }
 
-    h2 {
-      margin: 0;
-      font-size: 24px;
+    label {
+      display: block;
+      font-weight: 800;
+      margin: 12px 0 8px;
     }
 
-    .counter {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      padding: 8px 12px;
-      font-size: 14px;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    label:first-child {
+      margin-top: 0;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .word-card {
-      position: relative;
-      min-height: 160px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-      padding: 42px 22px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: left;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      animation: pop 0.22s ease both;
-    }
-
-    .word-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow);
-    }
-
-    .word {
+    textarea {
       width: 100%;
-      font-size: clamp(14px, 1.7vw, 18px);
-      font-weight: 600;
+      min-height: 115px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px;
+      font: inherit;
+      font-size: 15px;
       line-height: 1.45;
-      overflow-wrap: anywhere;
+      outline: none;
+      color: var(--text);
+      background: white;
+    }
+
+    textarea:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.12);
+    }
+
+    .side-buttons {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+      max-height: 260px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 18px;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .mini-front {
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 1.35;
+      max-height: 58px;
+      overflow: hidden;
       white-space: pre-wrap;
     }
 
-    .delete {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 34px;
-      height: 34px;
-      padding: 0;
-      border-radius: 50%;
-      background: var(--soft);
+    .mini-back {
       color: var(--muted);
-      opacity: 0;
+      font-size: 13px;
+      line-height: 1.35;
+      max-height: 54px;
+      overflow: hidden;
+      white-space: pre-wrap;
     }
 
-    .word-card:hover .delete {
-      opacity: 1;
+    .mini-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
     }
 
-    .delete:hover {
-      background: #fee2e2;
-      color: var(--danger);
+    .mini-actions button {
+      padding: 8px 10px;
+      font-size: 13px;
     }
 
     .empty {
-      background: rgba(255,255,255,0.75);
       border: 2px dashed #cbd5e1;
+      background: rgba(255,255,255,0.7);
       border-radius: 28px;
-      padding: 38px;
+      padding: 32px;
       text-align: center;
       color: var(--muted);
+      line-height: 1.5;
     }
 
-    @keyframes pop {
-      from {
-        opacity: 0;
-        transform: scale(0.96) translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-
-    @media (max-width: 760px) {
-      main {
-        width: min(100% - 22px, 1000px);
-        padding: 26px 0;
+    @media (max-width: 860px) {
+      .layout {
+        grid-template-columns: 1fr;
       }
 
-      .grid {
+      .study-buttons {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .panel {
-        padding: 16px;
       }
     }
 
     @media (max-width: 520px) {
-      .grid {
+      main {
+        width: min(100% - 18px, 1080px);
+      }
+
+      .panel {
+        padding: 14px;
+        border-radius: 22px;
+      }
+
+      .face {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .study-buttons {
         grid-template-columns: 1fr;
-      }
-
-      .actions {
-        align-items: stretch;
-      }
-
-      .buttons, .buttons button {
-        width: 100%;
       }
     }
   </style>
@@ -287,149 +364,322 @@
 <body>
   <main>
     <header>
-      <h1>Карточки для слов</h1>
-      <p class="subtitle">Добавляй слово, предложение или целый кусок текста. Каждое нажатие «Добавить» создаёт одну карточку.</p>
+      <h1>Карточки для текста</h1>
+      <p class="subtitle">Учи карточки по очереди: нажми на карточку, чтобы увидеть перевод. Можно добавлять свои карточки, перемешивать и сохранять на устройстве.</p>
     </header>
 
-    <section class="panel">
-      <label for="wordInput">Текст для карточки</label>
-      <textarea id="wordInput" placeholder="Вставь слово, предложение или большой кусок текста. Всё, что здесь написано, будет сохранено как одна карточка."></textarea>
-
-      <div class="actions">
-        <div class="hint">Ctrl / Cmd + Enter — добавить карточку</div>
-        <div class="buttons">
-          <button class="primary" id="addButton">Добавить</button>
-          <button class="secondary" id="shuffleButton">Шаффл</button>
-          <button class="outline" id="clearButton">Очистить</button>
+    <div class="layout">
+      <section class="panel study-panel">
+        <div class="top-row">
+          <div class="counter" id="counter">0 / 0</div>
+          <div class="counter" id="sideLabel">Английский → Русский</div>
         </div>
-      </div>
-    </section>
 
-    <section>
-      <div class="top-row">
-        <h2>Карточки</h2>
-        <div class="counter" id="counter">0 карточек</div>
-      </div>
+        <div class="card-stage" id="cardStage"></div>
 
-      <div id="cards"></div>
-    </section>
+        <div class="study-buttons">
+          <button class="outline" id="prevButton">Назад</button>
+          <button class="primary" id="flipButton">Перевернуть</button>
+          <button class="outline" id="nextButton">Дальше</button>
+          <button class="secondary" id="shuffleButton">Шаффл</button>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <label for="frontInput">Передняя сторона</label>
+        <textarea id="frontInput" placeholder="Английский текст, слово, предложение или абзац"></textarea>
+
+        <label for="backInput">Обратная сторона</label>
+        <textarea id="backInput" placeholder="Перевод"></textarea>
+
+        <div class="side-buttons">
+          <button class="primary" id="addButton">Добавить карточку</button>
+          <button class="secondary" id="resetButton">Вернуть карточки из текста</button>
+          <button class="danger" id="clearButton">Удалить все карточки</button>
+        </div>
+
+        <div class="small-note">
+          Кавычки отображаются обычными символами, не как &amp;quot;. Данные сохраняются в браузере через localStorage.
+        </div>
+
+        <div class="list" id="cardList"></div>
+      </aside>
+    </div>
   </main>
 
   <script>
-    const input = document.getElementById("wordInput");
-    const addButton = document.getElementById("addButton");
-    const shuffleButton = document.getElementById("shuffleButton");
-    const clearButton = document.getElementById("clearButton");
-    const cardsContainer = document.getElementById("cards");
+    const INITIAL_CARDS = [
+  {
+    "front": "Performance evaluation of the prospects and challenges of effective power generation and distribution in Nigeria",
+    "back": "Оценка перспектив и проблем эффективного производства и распределения электроэнергии в Нигерии."
+  },
+  {
+    "front": "The headline of the article is \"Performance evaluation of the prospects and challenges of effective power generation and distribution in Nigeria\".\nThe authors of the article are Anthony U. Adoghe, Temitope M. Adeyemi-Kayode, Victoria Oguntosin and Irene I. Amahia.\nThe article comes up from the journal \"Energy Reports\".\nThe article is dated in 2022.",
+    "back": "Заголовок статьи — «Оценка перспектив и проблем эффективного производства и распределения электроэнергии в Нигерии».\nАвторами статьи являются Anthony U. Adoghe, Temitope M. Adeyemi-Kayode, Victoria Oguntosin и Irene I. Amahia.\nСтатья опубликована в журнале «Energy Reports».\nСтатья датирована 2022 годом."
+  },
+  {
+    "front": "The article lies in the field of electrical engineering and energy systems.\nIt concerns the points of power generation, distribution and sector reforms in Nigeria.",
+    "back": "Статья относится к области электротехники и энергетических систем.\nОна касается вопросов производства электроэнергии, её распределения и реформ энергетического сектора в Нигерии."
+  },
+  {
+    "front": "The main idea of the article is to evaluate the growth of the Nigerian power sector from 1898 to the present.\nThe article deals with a question of paramount importance about identifying challenges and prospects for effective power generation and distribution in Nigeria.",
+    "back": "Главная идея статьи — оценить развитие энергетического сектора Нигерии с 1898 года до настоящего времени.\nСтатья рассматривает вопрос первостепенной важности: выявление проблем и перспектив эффективного производства и распределения электроэнергии в Нигерии."
+  },
+  {
+    "front": "The article opens with a general statement that Nigeria generates 4500 MW for a population of 200 million people.\nAt the beginning of the article the author states, that more than 50% of the population has no electricity access.\nFurther on, the article highlights the problem of inefficient evacuation of generated power.\nAfter that, the author focuses on the history of the Nigerian power sector from 1898 to the present.\nThe author brings to the forefront the problem of challenges such as poor maintenance, lack of investment and energy losses.\nThe article describes the Electric Power Sector Reform of 2005 and its outcomes.\nThe author informs us about key challenges including customer issues, financial challenges and energy losses.\nThe author draws a conclusion saying that distributed generation and smart metering systems are viable solutions.",
+    "back": "Статья начинается с общего утверждения о том, что Нигерия производит 4500 МВт электроэнергии для населения численностью 200 миллионов человек.\nВ начале статьи автор утверждает, что более 50% населения не имеет доступа к электричеству.\nДалее в статье подчёркивается проблема неэффективной передачи произведённой электроэнергии.\nПосле этого автор сосредоточивает внимание на истории энергетического сектора Нигерии с 1898 года до настоящего времени.\nАвтор выдвигает на первый план такие проблемы, как плохое техническое обслуживание, недостаток инвестиций и потери энергии.\nВ статье описывается реформа электроэнергетического сектора 2005 года и её результаты.\nАвтор сообщает о ключевых проблемах, включая проблемы потребителей, финансовые трудности и потери энергии.\nАвтор приходит к выводу, что распределённая генерация и системы умного учёта являются жизнеспособными решениями."
+  },
+  {
+    "front": "I find the article interesting, informative and topical.\nThe article is aimed to acquaint the readers with the strengths, weaknesses, opportunities and threats of the Nigerian power sector.\nThe author is absolutely right saying that the Nigerian energy market is telescopic in nature.\nThe author, to my mind, provides convincing evidence that distributed generation per Local Government Area could improve power supply.\nThe article is intended for a wide range of readers interested in power sector development and energy policy.",
+    "back": "Я считаю статью интересной, информативной и актуальной.\nСтатья направлена на то, чтобы познакомить читателей с сильными и слабыми сторонами, возможностями и угрозами энергетического сектора Нигерии.\nАвтор абсолютно прав, говоря, что энергетический рынок Нигерии имеет телескопический характер.\nНа мой взгляд, автор приводит убедительные доказательства того, что распределённая генерация в каждом районе местного самоуправления могла бы улучшить электроснабжение.\nСтатья предназначена для широкого круга читателей, интересующихся развитием энергетического сектора и энергетической политикой."
+  }
+];
+
+    const STORAGE_KEY = "textFlashcardsWithTranslation";
+    const cardStage = document.getElementById("cardStage");
     const counter = document.getElementById("counter");
+    const frontInput = document.getElementById("frontInput");
+    const backInput = document.getElementById("backInput");
+    const addButton = document.getElementById("addButton");
+    const resetButton = document.getElementById("resetButton");
+    const clearButton = document.getElementById("clearButton");
+    const shuffleButton = document.getElementById("shuffleButton");
+    const prevButton = document.getElementById("prevButton");
+    const nextButton = document.getElementById("nextButton");
+    const flipButton = document.getElementById("flipButton");
+    const cardList = document.getElementById("cardList");
 
-    const STORAGE_KEY = "wordCardsWords";
+    let cards = loadCards();
+    let currentIndex = 0;
+    let flipped = false;
 
-    function loadWords() {
+    function loadCards() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return [];
+        if (!saved) return [...INITIAL_CARDS];
         const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed.filter(item => typeof item === "string") : [];
+        if (!Array.isArray(parsed)) return [...INITIAL_CARDS];
+        return parsed
+          .filter(card => card && typeof card.front === "string" && typeof card.back === "string")
+          .map(card => ({ front: card.front, back: card.back }));
       } catch {
-        return [];
+        return [...INITIAL_CARDS];
       }
     }
 
-    function saveWords() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    function saveCards() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
     }
 
-    let words = loadWords();
-
-    function parseInput(text) {
-      const item = text.trim();
-      return item ? [item] : [];
-    }
-
-    function cardWord(count) {
-      if (count === 1) return "карточка";
-      if (count >= 2 && count <= 4) return "карточки";
-      return "карточек";
+    function clampIndex() {
+      if (cards.length === 0) {
+        currentIndex = 0;
+        flipped = false;
+        return;
+      }
+      if (currentIndex < 0) currentIndex = 0;
+      if (currentIndex >= cards.length) currentIndex = cards.length - 1;
     }
 
     function render() {
-      counter.textContent = `${words.length} ${cardWord(words.length)}`;
-      shuffleButton.disabled = words.length < 2;
-      clearButton.disabled = words.length === 0 && input.value.length === 0;
+      clampIndex();
 
-      cardsContainer.innerHTML = "";
+      counter.textContent = cards.length ? `${currentIndex + 1} / ${cards.length}` : "0 / 0";
+      prevButton.disabled = cards.length < 2;
+      nextButton.disabled = cards.length < 2;
+      shuffleButton.disabled = cards.length < 2;
+      flipButton.disabled = cards.length === 0;
 
-      if (words.length === 0) {
+      renderStudyCard();
+      renderList();
+    }
+
+    function renderStudyCard() {
+      cardStage.innerHTML = "";
+
+      if (cards.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "Пока нет карточек. Добавь первый текст выше.";
-        cardsContainer.appendChild(empty);
+        empty.textContent = "Пока нет карточек. Добавь карточку справа или верни карточки из текста.";
+        cardStage.appendChild(empty);
         return;
       }
 
-      const grid = document.createElement("div");
-      grid.className = "grid";
+      const card = cards[currentIndex];
 
-      words.forEach((word, index) => {
-        const card = document.createElement("article");
-        card.className = "word-card";
+      const button = document.createElement("button");
+      button.className = "flashcard" + (flipped ? " flipped" : "");
+      button.type = "button";
+      button.addEventListener("click", flipCard);
 
-        const deleteButton = document.createElement("button");
-        deleteButton.className = "delete";
-        deleteButton.textContent = "×";
-        deleteButton.title = "Удалить";
-        deleteButton.addEventListener("click", () => {
-          words.splice(index, 1);
-          saveWords();
+      const inner = document.createElement("div");
+      inner.className = "flashcard-inner";
+
+      const front = document.createElement("div");
+      front.className = "face front";
+
+      const frontLabel = document.createElement("div");
+      frontLabel.className = "face-label";
+      frontLabel.textContent = "Английский";
+
+      const frontText = document.createElement("div");
+      frontText.className = "card-text";
+      frontText.textContent = card.front;
+
+      front.appendChild(frontLabel);
+      front.appendChild(frontText);
+
+      const back = document.createElement("div");
+      back.className = "face back";
+
+      const backLabel = document.createElement("div");
+      backLabel.className = "face-label";
+      backLabel.textContent = "Перевод";
+
+      const backText = document.createElement("div");
+      backText.className = "card-text";
+      backText.textContent = card.back;
+
+      back.appendChild(backLabel);
+      back.appendChild(backText);
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      button.appendChild(inner);
+      cardStage.appendChild(button);
+    }
+
+    function renderList() {
+      cardList.innerHTML = "";
+
+      cards.forEach((card, index) => {
+        const item = document.createElement("div");
+        item.className = "mini-card";
+
+        const front = document.createElement("div");
+        front.className = "mini-front";
+        front.textContent = card.front;
+
+        const back = document.createElement("div");
+        back.className = "mini-back";
+        back.textContent = card.back;
+
+        const actions = document.createElement("div");
+        actions.className = "mini-actions";
+
+        const open = document.createElement("button");
+        open.className = "secondary";
+        open.textContent = "Открыть";
+        open.addEventListener("click", () => {
+          currentIndex = index;
+          flipped = false;
           render();
         });
 
-        const text = document.createElement("div");
-        text.className = "word";
-        text.textContent = word;
+        const remove = document.createElement("button");
+        remove.className = "danger";
+        remove.textContent = "Удалить";
+        remove.addEventListener("click", () => {
+          cards.splice(index, 1);
+          if (currentIndex >= cards.length) currentIndex = Math.max(0, cards.length - 1);
+          flipped = false;
+          saveCards();
+          render();
+        });
 
-        card.appendChild(deleteButton);
-        card.appendChild(text);
-        grid.appendChild(card);
+        actions.appendChild(open);
+        actions.appendChild(remove);
+
+        item.appendChild(front);
+        item.appendChild(back);
+        item.appendChild(actions);
+        cardList.appendChild(item);
       });
-
-      cardsContainer.appendChild(grid);
     }
 
-    function addWords() {
-      const newWords = parseInput(input.value);
-      if (newWords.length === 0) return;
+    function addCard() {
+      const front = frontInput.value.trim();
+      const back = backInput.value.trim();
 
-      words = [...words, ...newWords];
-      saveWords();
-      input.value = "";
+      if (!front || !back) return;
+
+      cards.push({ front, back });
+      currentIndex = cards.length - 1;
+      flipped = false;
+      saveCards();
+
+      frontInput.value = "";
+      backInput.value = "";
       render();
     }
 
-    function shuffleWords() {
-      for (let i = words.length - 1; i > 0; i--) {
+    function resetCards() {
+      cards = [...INITIAL_CARDS];
+      currentIndex = 0;
+      flipped = false;
+      saveCards();
+      render();
+    }
+
+    function clearCards() {
+      cards = [];
+      currentIndex = 0;
+      flipped = false;
+      saveCards();
+      render();
+    }
+
+    function shuffleCards() {
+      for (let i = cards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [words[i], words[j]] = [words[j], words[i]];
+        [cards[i], cards[j]] = [cards[j], cards[i]];
       }
-      saveWords();
+      currentIndex = 0;
+      flipped = false;
+      saveCards();
       render();
     }
 
-    function clearAll() {
-      words = [];
-      saveWords();
-      input.value = "";
+    function flipCard() {
+      flipped = !flipped;
+      renderStudyCard();
+    }
+
+    function nextCard() {
+      if (cards.length === 0) return;
+      currentIndex = (currentIndex + 1) % cards.length;
+      flipped = false;
       render();
     }
 
-    addButton.addEventListener("click", addWords);
-    shuffleButton.addEventListener("click", shuffleWords);
-    clearButton.addEventListener("click", clearAll);
-    input.addEventListener("input", render);
-    input.addEventListener("keydown", (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-        addWords();
+    function prevCard() {
+      if (cards.length === 0) return;
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      flipped = false;
+      render();
+    }
+
+    addButton.addEventListener("click", addCard);
+    resetButton.addEventListener("click", resetCards);
+    clearButton.addEventListener("click", clearCards);
+    shuffleButton.addEventListener("click", shuffleCards);
+    nextButton.addEventListener("click", nextCard);
+    prevButton.addEventListener("click", prevCard);
+    flipButton.addEventListener("click", flipCard);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.target.tagName === "TEXTAREA") {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          addCard();
+        }
+        return;
+      }
+
+      if (event.key === "ArrowRight") nextCard();
+      if (event.key === "ArrowLeft") prevCard();
+      if (event.key === " " || event.key === "Enter") {
+        event.preventDefault();
+        flipCard();
       }
     });
 
