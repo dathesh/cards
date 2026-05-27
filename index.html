@@ -322,7 +322,24 @@
     const cardsContainer = document.getElementById("cards");
     const counter = document.getElementById("counter");
 
-    let words = ["apple", "book", "window", "memory", "travel", "bright"];
+    const STORAGE_KEY = "wordCardsWords";
+
+    function loadWords() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return ["apple", "book", "window", "memory", "travel", "bright"];
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed.filter(item => typeof item === "string") : [];
+      } catch {
+        return ["apple", "book", "window", "memory", "travel", "bright"];
+      }
+    }
+
+    function saveWords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    }
+
+    let words = loadWords();
 
     function parseInput(text) {
       return text
@@ -365,6 +382,7 @@
         deleteButton.title = "Удалить";
         deleteButton.addEventListener("click", () => {
           words.splice(index, 1);
+          saveWords();
           render();
         });
 
@@ -385,6 +403,7 @@
       if (newWords.length === 0) return;
 
       words = [...words, ...newWords];
+      saveWords();
       input.value = "";
       render();
     }
@@ -394,11 +413,13 @@
         const j = Math.floor(Math.random() * (i + 1));
         [words[i], words[j]] = [words[j], words[i]];
       }
+      saveWords();
       render();
     }
 
     function clearAll() {
       words = [];
+      saveWords();
       input.value = "";
       render();
     }
