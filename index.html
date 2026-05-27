@@ -50,7 +50,7 @@
 
     .subtitle {
       margin: 14px auto 0;
-      max-width: 650px;
+      max-width: 680px;
       color: var(--muted);
       font-size: 18px;
       line-height: 1.55;
@@ -74,7 +74,7 @@
 
     textarea {
       width: 100%;
-      min-height: 150px;
+      min-height: 170px;
       resize: vertical;
       border: 1px solid var(--border);
       border-radius: 22px;
@@ -189,11 +189,11 @@
       border: 1px solid var(--border);
       border-radius: 28px;
       box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-      padding: 24px;
+      padding: 42px 22px 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      text-align: left;
       transition: transform 0.18s ease, box-shadow 0.18s ease;
       animation: pop 0.22s ease both;
     }
@@ -204,9 +204,10 @@
     }
 
     .word {
-      font-size: clamp(24px, 3vw, 34px);
-      font-weight: 800;
-      line-height: 1.2;
+      width: 100%;
+      font-size: clamp(14px, 1.7vw, 18px);
+      font-weight: 600;
+      line-height: 1.45;
       overflow-wrap: anywhere;
       white-space: pre-wrap;
     }
@@ -215,8 +216,8 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       padding: 0;
       border-radius: 50%;
       background: var(--soft);
@@ -287,15 +288,15 @@
   <main>
     <header>
       <h1>Карточки для слов</h1>
-      <p class="subtitle">Вводи слова или фразы, добавляй карточки и перемешивай порядок для тренировки.</p>
+      <p class="subtitle">Добавляй слово, предложение или целый кусок текста. Каждое нажатие «Добавить» создаёт одну карточку.</p>
     </header>
 
     <section class="panel">
-      <label for="wordInput">Введи слова</label>
-      <textarea id="wordInput" placeholder="Например: house, river, dream&#10;Можно писать через запятую, точку с запятой или с новой строки"></textarea>
+      <label for="wordInput">Текст для карточки</label>
+      <textarea id="wordInput" placeholder="Вставь слово, предложение или большой кусок текста. Всё, что здесь написано, будет сохранено как одна карточка."></textarea>
 
       <div class="actions">
-        <div class="hint">Ctrl / Cmd + Enter — добавить карточки</div>
+        <div class="hint">Ctrl / Cmd + Enter — добавить карточку</div>
         <div class="buttons">
           <button class="primary" id="addButton">Добавить</button>
           <button class="secondary" id="shuffleButton">Шаффл</button>
@@ -306,7 +307,7 @@
 
     <section>
       <div class="top-row">
-        <h2>Слова</h2>
+        <h2>Карточки</h2>
         <div class="counter" id="counter">0 карточек</div>
       </div>
 
@@ -327,11 +328,11 @@
     function loadWords() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return ["apple", "book", "window", "memory", "travel", "bright"];
+        if (!saved) return [];
         const parsed = JSON.parse(saved);
         return Array.isArray(parsed) ? parsed.filter(item => typeof item === "string") : [];
       } catch {
-        return ["apple", "book", "window", "memory", "travel", "bright"];
+        return [];
       }
     }
 
@@ -342,10 +343,8 @@
     let words = loadWords();
 
     function parseInput(text) {
-      return text
-        .split(/[\\n,;]+/)
-        .map(item => item.trim())
-        .filter(Boolean);
+      const item = text.trim();
+      return item ? [item] : [];
     }
 
     function cardWord(count) {
@@ -364,7 +363,7 @@
       if (words.length === 0) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "Пока нет карточек. Добавь слова выше.";
+        empty.textContent = "Пока нет карточек. Добавь первый текст выше.";
         cardsContainer.appendChild(empty);
         return;
       }
